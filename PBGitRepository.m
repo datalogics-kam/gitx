@@ -7,6 +7,7 @@
 //
 
 #import "PBGitRepository.h"
+#import "PBRepositoryDocumentController.h"
 #import "PBGitCommit.h"
 #import "PBGitWindowController.h"
 #import "PBGitBinary.h"
@@ -1201,6 +1202,12 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 - (void)showWindows
 {
 	NSAppleEventDescriptor *currentAppleEvent = [[NSAppleEventManager sharedAppleEventManager] currentAppleEvent];
+
+	if (!currentAppleEvent) {
+		PBRepositoryDocumentController *documentController = [PBRepositoryDocumentController sharedDocumentController];
+		NSURL *baseDir = [PBGitRepository baseDirForURL:self.fileURL];
+		currentAppleEvent = [documentController.appleEventsByURL objectForKey:baseDir];
+	}
 
 	if (currentAppleEvent) {
 		NSAppleEventDescriptor *eventRecord = [currentAppleEvent paramDescriptorForKeyword:keyAEPropData];

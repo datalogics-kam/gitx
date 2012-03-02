@@ -11,6 +11,17 @@
 #import "PBGitRevList.h"
 
 @implementation PBRepositoryDocumentController
+
+@synthesize appleEventsByURL;
+
+- (id) init {
+	self = [super init];
+	if (self) {
+		appleEventsByURL = [NSMutableDictionary dictionaryWithCapacity:2];
+	}
+	return self;
+}
+
 // This method is overridden to configure the open panel to only allow
 // selection of directories
 - (NSInteger)runModalOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray *)extensions
@@ -79,4 +90,16 @@
 	return [super validateMenuItem:item];
 }
 
+- (void)openDocumentWithContentsOfURL:(NSURL *)url display:(BOOL)displayDocument completionHandler:(void (^)(NSDocument *, BOOL, NSError *))completionHandler {
+	NSAppleEventDescriptor *currentAppleEvent = [[NSAppleEventManager sharedAppleEventManager] currentAppleEvent];
+	if (currentAppleEvent)
+		[appleEventsByURL setObject:[currentAppleEvent copy] forKey:url];
+
+	return [super openDocumentWithContentsOfURL:url
+										display:displayDocument
+							  completionHandler: ^(NSDocument *doc, BOOL wasOpen, NSError *error) {
+								  completionHandler(doc, wasOpen, error);
+								  [self.appleEventsByURL removeObjectForKey:url];
+							  }];
+}
 @end

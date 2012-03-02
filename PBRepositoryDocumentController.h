@@ -12,8 +12,10 @@
 
 @interface PBRepositoryDocumentController : NSDocumentController
 {
-
+	NSMutableDictionary *appleEventsByURL;
 }
+
+@property (readonly, retain) NSMutableDictionary *appleEventsByURL;
 
 - (id) documentForLocation:(NSURL*) url;
 - (void)initNewRepositoryAtURL:(NSURL *)url;
